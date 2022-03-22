@@ -1,5 +1,6 @@
 #связь с БД
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.core.mail import send_mail
 from django.db import models
 
 
@@ -52,8 +53,21 @@ class User(AbstractBaseUser):
 
     def set_activation_code(self):
         code = self.generate_activation_code()
-        if User.objects.filter(code=code).exists():
+        if User.objects.filter(activation_code=code).exists():
             self.set_activation_code()
         else:
             self.activation_code = code
             self.save()
+
+    def send_activation_mail(self):
+        link = f'http://localhost:8000/accounts/activate/{self.activation_code}/'
+        message = f"""
+        Здравствуйте! Спасибо за регистрацию на нашем сайте!
+        Для подтверждения пройдите по ссылке: {link}
+        """
+        send_mail(
+            "Подтверждение аккаунта",
+            message,
+            "test@gmail.com",
+            [self.email]
+        )

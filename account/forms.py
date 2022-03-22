@@ -27,11 +27,17 @@ class RegistrationForm(forms.Form):
     def save(self):
         data = self.cleaned_data
         user = User.objects.create_user(**data)
+        user.set_activation_code()
         #TODO: отправка писем на почту
-        # user.send_activation_mail()
+        user.send_activation_mail()
 
-class LoginForm(forms.Form):
-    pass
+
+# class LoginForm(forms.Form):
+#     email = forms.EmailField()
+#     password = forms.CharField(widget=forms.PasswordInput)
+#
+#     def clean_email(self):
+#
 
 
 class ChangePasswordForm(forms.Form):
