@@ -3,11 +3,12 @@
 {% block title %}Список продуктов{% endblock title %}
 
 {% block body %}
-    <h1>Список продуктов</h1>
-    {% for prod in products %}
-        <p>{{ prod.id }}</p>
-        <p><a href="{% url 'product-details' prod.id %}">{{ prod.name }}</a></p>
-        <p>{{ prod.price }}</p>
-        <p>------------------</p>
-    {% endfor %}
+  <h1>Список продуктов</h1>
+  {% for prod in products %}
+    <p>{{ prod.id }}</p>
+    <p><a href="{% url 'product-details' prod.id %}">{{ prod.name }}</a></p>
+    <p>{{ prod.price }}</p>
+    {% include 'add_to_cart_form.html' %}
+    <p>------------------</p>
+  {% endfor %}
 {% endblock body %}
