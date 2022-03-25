@@ -1,4 +1,6 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.core.paginator import Paginator, EmptyPage, InvalidPage
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -15,8 +17,28 @@ def index_page(request):
 
 
 class ProductsListView(View):
+    def filter_queryset(self, products):
+        price_from = self.request.GET.get('price_from', 0)
+        price_to = self.request.GET.get('price_to', 0)
+        if price_from and price_from.isdigit():
+            products = products.filter(price__gte=price_from)
+        if price_to and price_to.isdigit():
+            products = products.filter(price__lte=price_to)
+        return products
+
+    def paginate_queryset(self, products):
+        page_number = self.request.GET.get('page')
+        paginator = Paginator(products, 3)
+        try:
+            page = paginator.page(page_number)
+        except InvalidPage:
+            page = paginator.page(1)
+        return page
+
     def get(self, request, category_id):
         products = Product.objects.filter(category_id=category_id)
+        products = self.filter_queryset(products)
+        products = self.paginate_queryset(products)
         cart_form = AddToCartForm()
         return render(request, 'main/products_list.html', {'products': products,
                                                            'cart_form': cart_form})
@@ -67,17 +89,32 @@ class DeleteProductView(IsAdminCheckMixin, DeleteView):
     template_name = 'main/delete_product.html'
     success_url = reverse_lazy('index')
 
+# /search/?q=....
+class SearchResultsView(ListView):
+    queryset = Product.objects.all()
+    # SELECT * FROM product;
+    template_name = 'main/search_results.html'
+    context_object_name = 'products'
 
-# class ProductsListView(ListView):
-#     queryset = Product.objects.all()
-#     template_name = 'main/products_list.html'
+    def get_queryset(self):
+        q = self.request.GET.get('q')
+        queryset = super().get_queryset()
+        queryset = queryset.filter(Q(name__icontains=q) |
+                                   Q(description__icontains=q))
+        # SELECT * FROM product WHERE name ILIKE '%q%'
+        # OR description ILIKE '%q%';
+        return queryset
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['cart_form'] = AddToCartForm()
+        return context
 
 
-#TODO: сделать переходы между страницами
-#TODO: сделать список продуктов
-#TODO: авторизация
+
+
+
 #TODO: фильтрация, поиск, пагинация
-#TODO: корзина
 #TODO: заказы
 #TODO: отправка писем
 #TODO: деплой
