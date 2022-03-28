@@ -6,14 +6,13 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from order.forms import AddToCartForm
-from .models import Category, Product
+from .models import Product
 from .forms import CreateProductForm, UpdateProductForm
 
 
 def index_page(request):
-    categories = Category.objects.all()
-    return render(request, 'main/index.html', {'categories': categories})
+    products = Product.objects.all()[:6]
+    return render(request, 'main/index.html', {'products': products})
 
 
 class ProductsListView(View):
@@ -38,20 +37,15 @@ class ProductsListView(View):
     def get(self, request, category_id):
         products = Product.objects.filter(category_id=category_id)
         products = self.filter_queryset(products)
+
         products = self.paginate_queryset(products)
-        cart_form = AddToCartForm()
-        return render(request, 'main/products_list.html', {'products': products,
-                                                           'cart_form': cart_form})
+        return render(request, 'main/products_list.html', {'products': products})
 
 
 class ProductDetailsView(DetailView):
     queryset = Product.objects.all()
     template_name = 'main/product_details.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        context['cart_form'] = AddToCartForm()
-        return context
 
 #доступ только для администраторов
 class IsAdminCheckMixin(UserPassesTestMixin):
@@ -104,14 +98,6 @@ class SearchResultsView(ListView):
         # SELECT * FROM product WHERE name ILIKE '%q%'
         # OR description ILIKE '%q%';
         return queryset
-
-    def get_context_data(self):
-        context = super().get_context_data()
-        context['cart_form'] = AddToCartForm()
-        return context
-
-
-
 
 
 #TODO: фильтрация, поиск, пагинация
