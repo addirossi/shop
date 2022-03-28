@@ -1,12 +1,12 @@
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.db.models import Q
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from .models import Product
+from .models import Product, Category
 from .forms import CreateProductForm, UpdateProductForm
 
 
@@ -35,11 +35,12 @@ class ProductsListView(View):
         return page
 
     def get(self, request, category_id):
+        category = get_object_or_404(Category, slug=category_id)
         products = Product.objects.filter(category_id=category_id)
         products = self.filter_queryset(products)
-
         products = self.paginate_queryset(products)
-        return render(request, 'main/products_list.html', {'products': products})
+        return render(request, 'main/products_list.html', {'products': products,
+                                                           'category': category})
 
 
 class ProductDetailsView(DetailView):

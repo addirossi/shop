@@ -89,7 +89,7 @@
         {% for product in products %}
           <div class="s_item grid_2"> <a class="s_thumb" href="{% url 'product-details' product.id %}"><img src="{{ product.image.url }}" title="{{ product.name }}" alt="{{ product.name }}" /></a>
             <h3><a href="product.html">{{ product.name }}</a></h3>
-            <p class="s_price s_promo_price"><span class="s_old_price"><span class="s_currency s_before">.</span>.</span><span class="s_currency s_before">{{ product.price }}</span></p>
+            <p class="s_price">{{ product.price|floatformat:"0" }} <span class="s_currency s_before">сом</span></p>
 <!--            <a class="s_button_add_to_cart" href="product.html"><span class="s_icon_16"><span class="s_icon"></span>Добавить в корзину</span></a>-->
             {% include 'add_to_cart_form.html' with product=product cart_form=cart_form %}
           </div>
