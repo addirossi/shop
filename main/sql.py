@@ -129,3 +129,4 @@
 # product = Product.objects.get(id=2)
 # product.delete()
 
+# wadsedrgthfyjgfthdrgsfeadw

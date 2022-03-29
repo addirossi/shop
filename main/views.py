@@ -84,7 +84,7 @@ class DeleteProductView(IsAdminCheckMixin, DeleteView):
     template_name = 'main/delete_product.html'
     success_url = reverse_lazy('index')
 
-# /search/?q=....
+
 class SearchResultsView(ListView):
     queryset = Product.objects.all()
     # SELECT * FROM product;
@@ -96,12 +96,9 @@ class SearchResultsView(ListView):
         queryset = super().get_queryset()
         queryset = queryset.filter(Q(name__icontains=q) |
                                    Q(description__icontains=q))
-        # SELECT * FROM product WHERE name ILIKE '%q%'
-        # OR description ILIKE '%q%';
         return queryset
 
 
-#TODO: фильтрация, поиск, пагинация
 #TODO: заказы
 #TODO: отправка писем
 #TODO: деплой
