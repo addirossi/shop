@@ -61,6 +61,10 @@ class Cart:
                 self.cart[product_id]['quantity'] += 1
                 self.save()
 
+    def clear(self):
+        del self.session['cart']
+        self.session.modified = True
+
 
 STATUS_CHOICES = (
     ('open', 'Открытый'),
