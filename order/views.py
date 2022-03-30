@@ -38,3 +38,11 @@ class IncrementQuantityView(View):
         product = get_object_or_404(Product, id=product_id)
         cart.increment_quantity(product_id)
         return redirect(reverse_lazy('cart-details'))
+
+
+class PlaceOrderView(View):
+    pass
+
+
+class OrdersListView():
+    pass

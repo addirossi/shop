@@ -1,8 +1,12 @@
 from decimal import Decimal
 
+from django.contrib.auth import get_user_model
 from django.db import models
 
 from main.models import Product
+
+
+User = get_user_model()
 
 
 class Cart:
@@ -57,8 +61,32 @@ class Cart:
                 self.cart[product_id]['quantity'] += 1
                 self.save()
 
-# Create your models here.
-# class Order(models.Model):
-#     user = models.ForeignKey()
-#     products = models.ManyToManyField()
-#     created_at = models.DateTimeField(auto_now_add=True)
+
+STATUS_CHOICES = (
+    ('open', 'Открытый'),
+    ('in_process', 'В обработке'),
+    ('canceled', 'Отменённый'),
+    ('finished', 'Завершённый')
+)
+
+
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='orders')
+    products = models.ManyToManyField(Product,
+                                      through='OrderItems')
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20,
+                              choices=STATUS_CHOICES)
+    phone_number = models.CharField(max_length=20, blank=True)
+    address = models.CharField(max_length=50, blank=True)
+
+
+class OrderItems(models.Model):
+    order = models.ForeignKey(Order,
+                              on_delete=models.RESTRICT,
+                              related_name='items')
+    product = models.ForeignKey(Product,
+                                on_delete=models.RESTRICT,
+                                related_name='order_items')
+    quantity = models.PositiveSmallIntegerField(default=1)
+

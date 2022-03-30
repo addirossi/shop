@@ -12,7 +12,7 @@ from .forms import CreateProductForm, UpdateProductForm
 
 def index_page(request):
     products = Product.objects.all()[:6]
-    return render(request, 'main/index.html', {'products': products})
+    return render(request, 'main/index.html', context={'products': products})
 
 
 class ProductsListView(View):
