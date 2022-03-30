@@ -59,17 +59,28 @@ class PlaceOrderView(LoginRequiredMixin, View):
         if form.is_valid():
             phone_number = form.cleaned_data.get('phone_number')
             address = form.cleaned_data.get('address')
+            total_sum = cart.get_cart_total()
             order = Order.objects.create(user=user,
                                          phone_number=phone_number,
                                          address=address,
-                                         status='open')
+                                         status='open',
+                                         total_sum=total_sum)
             for item in cart:
                 OrderItems.objects.create(order=order,
                                           product=item['product'],
                                           quantity=item['quantity'])
             cart.clear()
-            return redirect(reverse_lazy())
+            return redirect(reverse_lazy('orders-list'))
+        return render(request, self.template_name, {'form': form,
+                                                    'cart': cart})
 
 
 class OrdersListView(LoginRequiredMixin, ListView):
-    pass
+    queryset = Order.objects.all()
+    template_name = 'order/orders_list.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user).order_by('-created_at')
+        return queryset

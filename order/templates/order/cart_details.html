@@ -28,7 +28,6 @@
 
     <div id="shopping_cart" class="grid_12">
 
-      <form id="cart" class="clearfix">
         <table class="s_table_1" width="100%" cellpadding="0" cellspacing="0" border="0">
           <thead>
             <tr>
@@ -67,11 +66,8 @@
         <div class="clear"></div>
         <br />
 
-        <a class="s_button_1 s_ddd_bgr left"><span class="s_text">Continue Shopping</span></a>
-        <button class="s_button_1 s_main_color_bgr" type="submit"><span class="s_text">Checkout</span></button>
-        <a class="s_button_1 s_main_color_bgr"><span class="s_text">Update</span></a>
-      </form>
-
+        <a href="{% url 'index' %}" class="s_button_1 s_ddd_bgr left"><span class="s_text">Continue Shopping</span></a>
+        <a href="{% url 'checkout' %}"><button class="s_button_1 s_main_color_bgr"><span class="s_text">Checkout</span></button></a>
     </div>
 
     <div class="clear"></div>
